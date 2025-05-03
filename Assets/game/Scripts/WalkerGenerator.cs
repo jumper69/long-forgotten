@@ -23,7 +23,7 @@ public class WalkerGenerator : MonoBehaviour
     public int MaximumWalkers = 30;
     public int TileCount = default;
     public float FillPercentage = 0.5f;
-    public float WaitTime = 0.02f;
+    public float WaitTime = 0.00f;
 
     bool HasFloorNeighbor(Vector3Int pos)
     {
@@ -71,7 +71,8 @@ public class WalkerGenerator : MonoBehaviour
 
         Walkers = new List<WalkerObject>();
 
-        Vector3Int TileCenter = new Vector3Int(gridHandler.GetLength(0) / 2, gridHandler.GetLength(1) / 2, 0);
+        //Vector3Int TileCenter = new Vector3Int(gridHandler.GetLength(0) / 2, gridHandler.GetLength(1) / 2, 0);
+        Vector3Int TileCenter = new Vector3Int(MapWidth / 2, MapHeight / 2, 0);
 
         WalkerObject curWalker = new WalkerObject(new Vector2(TileCenter.x, TileCenter.y), GetDirection(), 0.5f);
         gridHandler[TileCenter.x, TileCenter.y] = Grid.FLOOR;
@@ -117,7 +118,7 @@ public class WalkerGenerator : MonoBehaviour
                 Vector3Int curPos = new Vector3Int((int)curWalker.Position.x, (int)curWalker.Position.y, 0);
 
                 //Block instead of single tile
-                int width = UnityEngine.Random.Range(2, 3);   // min 2 width
+                int width = UnityEngine.Random.Range(3, 6);   // min 2 width
                 int height = UnityEngine.Random.Range(3, 6);  // min 3 height (ex. 2x3, 2x4, 2x5)
 
                 for (int dx = 0; dx < width; dx++)
@@ -165,7 +166,9 @@ public class WalkerGenerator : MonoBehaviour
         RemoveWeaklyConnectedFloors(2);
         FixThinFloorRegions();
         FillLonelyTileNeighbors();
-        StartCoroutine(CreateWalls());
+        //CreateWalls();
+        FillMapWithWalls(30);
+        //StartCoroutine(CreateWalls());
     }
 
     void FillLonelyTileNeighbors()
@@ -356,49 +359,86 @@ public class WalkerGenerator : MonoBehaviour
         }
     }
 
-    IEnumerator CreateWalls()
+    //IEnumerator CreateWalls()
+    //{
+    //    for (int x = 0; x < gridHandler.GetLength(0) - 1; x++)
+    //    {
+    //        for (int y = 0; y < gridHandler.GetLength(1) - 1; y++)
+    //        {
+    //            if (gridHandler[x, y] == Grid.FLOOR)
+    //            {
+    //                bool hasCreatedWall = false;
+
+    //                if (gridHandler[x + 1, y] == Grid.EMPTY)
+    //                {
+    //                    tileMap.SetTile(new Vector3Int(x + 1, y, 0), Wall);
+    //                    gridHandler[x + 1, y] = Grid.WALL;
+    //                    hasCreatedWall = true;
+    //                }
+    //                if (gridHandler[x - 1, y] == Grid.EMPTY)
+    //                {
+    //                    tileMap.SetTile(new Vector3Int(x - 1, y, 0), Wall);
+    //                    gridHandler[x - 1, y] = Grid.WALL;
+    //                    hasCreatedWall = true;
+    //                }
+    //                if (gridHandler[x, y + 1] == Grid.EMPTY)
+    //                {
+    //                    tileMap.SetTile(new Vector3Int(x, y + 1, 0), Wall);
+    //                    gridHandler[x, y + 1] = Grid.WALL;
+    //                    hasCreatedWall = true;
+    //                }
+    //                if (gridHandler[x, y - 1] == Grid.EMPTY)
+    //                {
+    //                    tileMap.SetTile(new Vector3Int(x, y - 1, 0), Wall);
+    //                    gridHandler[x, y - 1] = Grid.WALL;
+    //                    hasCreatedWall = true;
+    //                }
+
+    //                if (hasCreatedWall)
+    //                {
+    //                    yield return new WaitForSeconds(WaitTime);
+    //                }
+
+    //            }
+    //        }
+    //    }
+    //    FillMapWithWalls(30);
+    //}
+//
+    void CreateWalls()
     {
-        for (int x = 0; x < gridHandler.GetLength(0) - 1; x++)
+        for (int x = 1; x < gridHandler.GetLength(0) - 1; x++)
         {
-            for (int y = 0; y < gridHandler.GetLength(1) - 1; y++)
+            for (int y = 1; y < gridHandler.GetLength(1) - 1; y++)
             {
                 if (gridHandler[x, y] == Grid.FLOOR)
                 {
-                    bool hasCreatedWall = false;
-
                     if (gridHandler[x + 1, y] == Grid.EMPTY)
                     {
                         tileMap.SetTile(new Vector3Int(x + 1, y, 0), Wall);
                         gridHandler[x + 1, y] = Grid.WALL;
-                        hasCreatedWall = true;
                     }
                     if (gridHandler[x - 1, y] == Grid.EMPTY)
                     {
                         tileMap.SetTile(new Vector3Int(x - 1, y, 0), Wall);
                         gridHandler[x - 1, y] = Grid.WALL;
-                        hasCreatedWall = true;
                     }
                     if (gridHandler[x, y + 1] == Grid.EMPTY)
                     {
                         tileMap.SetTile(new Vector3Int(x, y + 1, 0), Wall);
                         gridHandler[x, y + 1] = Grid.WALL;
-                        hasCreatedWall = true;
                     }
                     if (gridHandler[x, y - 1] == Grid.EMPTY)
                     {
                         tileMap.SetTile(new Vector3Int(x, y - 1, 0), Wall);
                         gridHandler[x, y - 1] = Grid.WALL;
-                        hasCreatedWall = true;
-                    }
-
-                    if (hasCreatedWall)
-                    {
-                        yield return new WaitForSeconds(WaitTime);
                     }
                 }
             }
         }
     }
+//
+
     void RemoveLonelyTiles()
     {
         for (int x = 1; x < MapWidth - 1; x++)
@@ -414,4 +454,26 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
+
+    void FillMapWithWalls(int left = 30, int right = 30, int bottom = 30, int top = 30)
+    {
+        int startX = -left;
+        int endX = MapWidth + right;
+        int startY = -bottom;
+        int endY = MapHeight + top;
+
+        for (int x = startX; x < endX; x++)
+        {
+            for (int y = startY; y < endY; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+
+                if (x < 0 || y < 0 || x >= MapWidth || y >= MapHeight || gridHandler[x, y] == Grid.EMPTY)
+                {
+                    tileMap.SetTile(pos, Wall);
+                }
+            }
+        }
+    }
+
 }
