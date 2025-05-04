@@ -124,8 +124,8 @@ public class WalkerGenerator : MonoBehaviour
             {
                 Vector3Int curPos = new Vector3Int((int)curWalker.Position.x, (int)curWalker.Position.y, 0);
 
-                int width = UnityEngine.Random.Range(3, 6);
-                int height = UnityEngine.Random.Range(3, 6);
+                int width = UnityEngine.Random.Range(4, 6);
+                int height = UnityEngine.Random.Range(4, 6);
 
                 for (int dx = 0; dx < width; dx++)
                 {
@@ -466,6 +466,29 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
+    //void ScatterGrass()
+    //{
+    //    for (int x = 2; x < gridHandler.GetLength(0) - 2; x++)
+    //    {
+    //        for (int y = 2; y < gridHandler.GetLength(1) - 2; y++)
+    //        {
+    //            if (gridHandler[x, y] != Grid.FLOOR)
+    //                continue;
+
+    //            bool isSurrounded =
+    //                gridHandler[x + 1, y] == Grid.FLOOR &&
+    //                gridHandler[x - 1, y] == Grid.FLOOR &&
+    //                gridHandler[x, y + 1] == Grid.FLOOR &&
+    //                gridHandler[x, y - 1] == Grid.FLOOR;
+
+    //            if (isSurrounded && UnityEngine.Random.value < GrassSpawnChance)
+    //            {
+    //                Vector3Int pos = new Vector3Int(x, y, 0);
+    //                grassTilemap.SetTile(pos, GrassTile);
+    //            }
+    //        }
+    //    }
+    //}
     void ScatterGrass()
     {
         for (int x = 2; x < gridHandler.GetLength(0) - 2; x++)
@@ -475,13 +498,22 @@ public class WalkerGenerator : MonoBehaviour
                 if (gridHandler[x, y] != Grid.FLOOR)
                     continue;
 
-                bool isSurrounded =
-                    gridHandler[x + 1, y] == Grid.FLOOR &&
-                    gridHandler[x - 1, y] == Grid.FLOOR &&
-                    gridHandler[x, y + 1] == Grid.FLOOR &&
-                    gridHandler[x, y - 1] == Grid.FLOOR;
+                bool isDeepInsideFloor = true;
 
-                if (isSurrounded && UnityEngine.Random.value < GrassSpawnChance)
+                for (int dx = -1; dx <= 1; dx++)
+                {
+                    for (int dy = -1; dy <= 1; dy++)
+                    {
+                        if (gridHandler[x + dx, y + dy] != Grid.FLOOR)
+                        {
+                            isDeepInsideFloor = false;
+                            break;
+                        }
+                    }
+                    if (!isDeepInsideFloor) break;
+                }
+
+                if (isDeepInsideFloor && UnityEngine.Random.value < GrassSpawnChance)
                 {
                     Vector3Int pos = new Vector3Int(x, y, 0);
                     grassTilemap.SetTile(pos, GrassTile);
