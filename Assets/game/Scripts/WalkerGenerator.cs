@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.AI;
+using NavMeshPlus.Components;
 
 public class WalkerGenerator : MonoBehaviour
 {
@@ -17,6 +19,8 @@ public class WalkerGenerator : MonoBehaviour
     public Tilemap tileMap;
     public TileBase Floor;
     public TileBase Wall;
+    public Tilemap wallTileMap;
+   
     public int MapWidth = 120;
     public int MapHeight = 120;
 
@@ -32,6 +36,8 @@ public class WalkerGenerator : MonoBehaviour
     public Tilemap grassTilemap;
     public TileBase GrassTile;
     public float GrassSpawnChance = 0.015f;
+
+    public NavMeshSurface navMeshSurface;
 
     bool HasFloorNeighbor(Vector3Int pos)
     {
@@ -175,6 +181,15 @@ public class WalkerGenerator : MonoBehaviour
         FillMapWithWalls(30);
         ScatterPlants();
         ScatterGrass();
+
+        if (navMeshSurface != null)
+        {
+            navMeshSurface.BuildNavMesh();
+        }
+        else
+        {
+            Debug.LogWarning("NavMeshSurface not assigned!");
+        }
     }
 
     void FillLonelyTileNeighbors()
@@ -429,7 +444,9 @@ public class WalkerGenerator : MonoBehaviour
 
                 if (x < 0 || y < 0 || x >= MapWidth || y >= MapHeight || gridHandler[x, y] == Grid.EMPTY)
                 {
-                    tileMap.SetTile(pos, Wall);
+                    //
+                    wallTileMap.SetTile(pos, Wall);
+                    //
                 }
             }
         }

@@ -1,0 +1,90 @@
+using UnityEngine;
+using System.Collections;
+using UnityEngine.AI;
+
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(Animator))]
+public class EnemyAI : MonoBehaviour
+{
+    public Transform player;
+    public float detectionRange = 5f;
+    public float wanderRadius = 8f;
+    public float wanderInterval = 3f;
+
+    private NavMeshAgent agent;
+    private Animator animator;
+    private float wanderTimer;
+
+    public float attackRange = 1.2f;
+    public float attackCooldown = 1.5f;
+
+    private bool isAttacking = false;
+
+    void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
+
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+
+        wanderTimer = wanderInterval;
+    }
+
+    void Update()
+    {
+        float distanceToPlayer = player != null ? Vector3.Distance(transform.position, player.position) : Mathf.Infinity;
+
+        if (isAttacking)
+        {
+            agent.ResetPath();
+        }
+        else if (distanceToPlayer <= attackRange)
+        {
+            StartCoroutine(Attack());
+        }
+        else if (distanceToPlayer <= detectionRange)
+        {
+            agent.SetDestination(player.position);
+        }
+        else
+        {
+            wanderTimer += Time.deltaTime;
+            if (wanderTimer >= wanderInterval)
+            {
+                Vector3 randomDirection = Random.insideUnitCircle * wanderRadius;
+                Vector3 wanderTarget = transform.position + new Vector3(randomDirection.x, randomDirection.y, 0f);
+
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(wanderTarget, out hit, 1.5f, NavMesh.AllAreas))
+                {
+                    agent.SetDestination(hit.position);
+                }
+
+                wanderTimer = 0f;
+            }
+        }
+
+        animator.SetFloat("Speed", agent.velocity.magnitude);
+
+        Vector3 scale = transform.localScale;
+        if (agent.velocity.x > 0.1f)
+            scale.x = Mathf.Abs(scale.x);
+        else if (agent.velocity.x < -0.1f)
+            scale.x = -Mathf.Abs(scale.x);
+        transform.localScale = scale;
+    }
+    IEnumerator Attack()
+    {
+        isAttacking = true;
+        animator.SetBool("isAttacking", true);
+        agent.ResetPath();
+
+        yield return new WaitForSeconds(0.8f);
+
+        animator.SetBool("isAttacking", false);
+        yield return new WaitForSeconds(attackCooldown);
+
+        isAttacking = false;
+    }
+}

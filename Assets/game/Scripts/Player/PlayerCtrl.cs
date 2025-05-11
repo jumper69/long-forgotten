@@ -56,11 +56,11 @@ public class PlayerCtrl : MonoBehaviour
         rb.velocity = new Vector2(speedX, speedY);
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Enemy"))
-        {
-            Debug.Log("Zderzenie z przeciwnikiem!");
-        }
-    }
+    //void OnCollisionEnter2D(Collision2D collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Enemy"))
+    //    {
+    //        Debug.Log("x");
+    //    }
+    //}
 }
