@@ -43,6 +43,7 @@ public class WalkerGenerator : MonoBehaviour
     public GameObject orcPrefab;
     public int numberOfEnemies = 4;
 
+    public GameObject orcRiderPrefab;
     bool HasFloorNeighbor(Vector3Int pos)
     {
         int x = pos.x;
@@ -196,6 +197,7 @@ public class WalkerGenerator : MonoBehaviour
         }
 
         SpawnEnemies();
+        SpawnBoss();
     }
 
     void FillLonelyTileNeighbors()
@@ -547,4 +549,31 @@ public class WalkerGenerator : MonoBehaviour
         }
     }
 
+    void SpawnBoss()
+    {
+        List<Vector3Int> floorPositions = new List<Vector3Int>();
+
+        for (int x = 0; x < MapWidth; x++)
+        {
+            for (int y = 0; y < MapHeight; y++)
+            {
+                if (gridHandler[x, y] == Grid.FLOOR)
+                {
+                    floorPositions.Add(new Vector3Int(x, y, 0));
+                }
+            }
+        }
+
+        if (floorPositions.Count > 0)
+        {
+            int randIndex = Random.Range(0, floorPositions.Count);
+            Vector3Int spawnTile = floorPositions[randIndex];
+            Vector3 worldPos = tileMap.CellToWorld(spawnTile) + new Vector3(0.5f, 0.5f, 0);
+            Instantiate(orcRiderPrefab, worldPos, Quaternion.identity);
+        }
+        else
+        {
+            Debug.LogWarning("No valid floor.");
+        }
+    }
 }
