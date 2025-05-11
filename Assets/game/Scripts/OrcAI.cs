@@ -27,7 +27,21 @@ public class OrcAI : MonoBehaviour
         agent.updateUpAxis = false;
 
         wanderTimer = wanderInterval;
+
+        if (player == null)
+        {
+            GameObject found = GameObject.FindGameObjectWithTag("Player");
+            if (found != null)
+            {
+                player = found.transform;
+            }
+            else
+            {
+                Debug.LogWarning("Player not found.");
+            }
+        }
     }
+
 
     void Update()
     {

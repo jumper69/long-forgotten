@@ -39,6 +39,10 @@ public class WalkerGenerator : MonoBehaviour
 
     public NavMeshSurface navMeshSurface;
 
+    public GameObject skeletonPrefab;
+    public GameObject orcPrefab;
+    public int numberOfEnemies = 4;
+
     bool HasFloorNeighbor(Vector3Int pos)
     {
         int x = pos.x;
@@ -190,6 +194,8 @@ public class WalkerGenerator : MonoBehaviour
         {
             Debug.LogWarning("NavMeshSurface not assigned!");
         }
+
+        SpawnEnemies();
     }
 
     void FillLonelyTileNeighbors()
@@ -365,8 +371,6 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
-
-
     void UpdatePosition()
     {
         for (int i = 0; i < Walkers.Count; i++)
@@ -378,7 +382,6 @@ public class WalkerGenerator : MonoBehaviour
             Walkers[i] = FoundWalker;
         }
     }
-
     void CreateWalls()
     {
         for (int x = 1; x < gridHandler.GetLength(0) - 1; x++)
@@ -411,7 +414,6 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
-//
 
     void RemoveLonelyTiles()
     {
@@ -444,9 +446,7 @@ public class WalkerGenerator : MonoBehaviour
 
                 if (x < 0 || y < 0 || x >= MapWidth || y >= MapHeight || gridHandler[x, y] == Grid.EMPTY)
                 {
-                    //
                     wallTileMap.SetTile(pos, Wall);
-                    //
                 }
             }
         }
@@ -483,29 +483,6 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
-    //void ScatterGrass()
-    //{
-    //    for (int x = 2; x < gridHandler.GetLength(0) - 2; x++)
-    //    {
-    //        for (int y = 2; y < gridHandler.GetLength(1) - 2; y++)
-    //        {
-    //            if (gridHandler[x, y] != Grid.FLOOR)
-    //                continue;
-
-    //            bool isSurrounded =
-    //                gridHandler[x + 1, y] == Grid.FLOOR &&
-    //                gridHandler[x - 1, y] == Grid.FLOOR &&
-    //                gridHandler[x, y + 1] == Grid.FLOOR &&
-    //                gridHandler[x, y - 1] == Grid.FLOOR;
-
-    //            if (isSurrounded && UnityEngine.Random.value < GrassSpawnChance)
-    //            {
-    //                Vector3Int pos = new Vector3Int(x, y, 0);
-    //                grassTilemap.SetTile(pos, GrassTile);
-    //            }
-    //        }
-    //    }
-    //}
     void ScatterGrass()
     {
         for (int x = 2; x < gridHandler.GetLength(0) - 2; x++)
@@ -538,4 +515,36 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
+    void SpawnEnemies()
+    {
+        int totalWidth = gridHandler.GetLength(0);
+        int totalHeight = gridHandler.GetLength(1);
+
+        List<Vector3Int> floorPositions = new List<Vector3Int>();
+
+        for (int x = 0; x < totalWidth; x++)
+        {
+            for (int y = 0; y < totalHeight; y++)
+            {
+                if (gridHandler[x, y] == Grid.FLOOR)
+                {
+                    floorPositions.Add(new Vector3Int(x, y, 0));
+                }
+            }
+        }
+
+        for (int i = 0; i < numberOfEnemies && floorPositions.Count > 0; i++)
+        {
+            int randIndex = Random.Range(0, floorPositions.Count);
+            Vector3Int spawnPos = floorPositions[randIndex];
+            floorPositions.RemoveAt(randIndex);
+
+            GameObject enemyToSpawn = (i % 2 == 0) ? skeletonPrefab : orcPrefab;
+
+            Vector3 worldPos = tileMap.CellToWorld(spawnPos) + new Vector3(0.5f, 0.5f, 0);
+
+            Instantiate(enemyToSpawn, worldPos, Quaternion.identity);
+        }
+    }
+
 }
