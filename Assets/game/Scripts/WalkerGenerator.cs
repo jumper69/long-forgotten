@@ -48,6 +48,8 @@ public class WalkerGenerator : MonoBehaviour
     public GameObject[] treePrefabs;
     public float treeSpawnChance = 0.01f;
 
+    public GameObject playerObject;
+
     bool HasFloorNeighbor(Vector3Int pos)
     {
         int x = pos.x;
@@ -203,6 +205,18 @@ public class WalkerGenerator : MonoBehaviour
 
         SpawnEnemies();
         SpawnBoss();
+
+        if (playerObject != null)
+        {
+            Vector3Int spawnTile = FindEdgePlayerStart();
+
+            if (spawnTile.x >= 0 && spawnTile.y >= 0)
+            {
+                Vector3 worldPos = tileMap.CellToWorld(spawnTile) + new Vector3(0.5f, 0.5f, 0);
+                playerObject.transform.position = worldPos;
+            }
+        }
+
     }
 
     void FillLonelyTileNeighbors()
@@ -640,4 +654,25 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
+
+    Vector3Int FindEdgePlayerStart()
+    {
+        int edgeOffset = 2;
+
+        for (int x = edgeOffset; x < MapWidth - edgeOffset; x++)
+        {
+            for (int y = edgeOffset; y < edgeOffset + 4; y++)
+            {
+                if (gridHandler[x, y] == Grid.FLOOR)
+                {
+                    return new Vector3Int(x, y, 0);
+                }
+            }
+        }
+
+        Debug.LogWarning("Nie znaleziono pola startowego przy dolnej krawêdzi.");
+        return new Vector3Int(-1, -1, 0);
+    }
+
+
 }
