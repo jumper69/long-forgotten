@@ -44,6 +44,10 @@ public class WalkerGenerator : MonoBehaviour
     public int numberOfEnemies = 4;
 
     public GameObject orcRiderPrefab;
+
+    public GameObject[] treePrefabs;
+    public float treeSpawnChance = 0.01f;
+
     bool HasFloorNeighbor(Vector3Int pos)
     {
         int x = pos.x;
@@ -135,8 +139,8 @@ public class WalkerGenerator : MonoBehaviour
             {
                 Vector3Int curPos = new Vector3Int((int)curWalker.Position.x, (int)curWalker.Position.y, 0);
 
-                int width = UnityEngine.Random.Range(4, 6);
-                int height = UnityEngine.Random.Range(4, 6);
+                int width = UnityEngine.Random.Range(2, 6);
+                int height = UnityEngine.Random.Range(2, 6);
 
                 for (int dx = 0; dx < width; dx++)
                 {
@@ -186,6 +190,7 @@ public class WalkerGenerator : MonoBehaviour
         FillMapWithWalls(30);
         ScatterPlants();
         ScatterGrass();
+        ScatterTrees();
 
         if (navMeshSurface != null)
         {
@@ -574,6 +579,65 @@ public class WalkerGenerator : MonoBehaviour
         else
         {
             Debug.LogWarning("No valid floor.");
+        }
+    }
+
+    void ScatterTrees()
+    {
+        int minSpacing = 2;
+        HashSet<Vector3Int> occupied = new HashSet<Vector3Int>();
+
+        for (int x = minSpacing; x < gridHandler.GetLength(0) - minSpacing; x++)
+        {
+            for (int y = minSpacing; y < gridHandler.GetLength(1) - minSpacing; y++)
+            {
+                Vector3Int cell = new Vector3Int(x, y, 0);
+
+                if (gridHandler[x, y] != Grid.FLOOR)
+                    continue;
+
+                bool tooCloseToTree = false;
+                for (int dx = -minSpacing; dx <= minSpacing && !tooCloseToTree; dx++)
+                {
+                    for (int dy = -minSpacing; dy <= minSpacing; dy++)
+                    {
+                        Vector3Int neighbor = new Vector3Int(x + dx, y + dy, 0);
+                        if (occupied.Contains(neighbor))
+                        {
+                            tooCloseToTree = true;
+                            break;
+                        }
+                    }
+                }
+                if (tooCloseToTree) continue;
+
+                bool safeGround = true;
+                for (int dx = -minSpacing; dx <= minSpacing && safeGround; dx++)
+                {
+                    for (int dy = -minSpacing; dy <= minSpacing; dy++)
+                    {
+                        int nx = x + dx;
+                        int ny = y + dy;
+
+                        if (gridHandler[nx, ny] != Grid.FLOOR)
+                        {
+                            safeGround = false;
+                            break;
+                        }
+                    }
+                }
+                if (!safeGround) continue;
+
+                if (Random.value < treeSpawnChance)
+                {
+                    Vector3 worldPos = tileMap.CellToWorld(cell) + new Vector3(0.5f, 0.5f, 0);
+                    int index = Random.Range(0, treePrefabs.Length);
+                    GameObject tree = Instantiate(treePrefabs[index], worldPos, Quaternion.identity);
+                    tree.isStatic = true;
+
+                    occupied.Add(cell);
+                }
+            }
         }
     }
 }
