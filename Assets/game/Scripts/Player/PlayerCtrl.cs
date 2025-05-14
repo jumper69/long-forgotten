@@ -5,7 +5,6 @@ using UnityEngine.UIElements;
 public class PlayerCtrl : MonoBehaviour
 {
     private Animator anim;
-    //
     public float movSpeed = 5f;
 
     private float speedX, speedY;
@@ -16,8 +15,6 @@ public class PlayerCtrl : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         anim.SetBool("isAttacking", false);
     }
-
-    //
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -55,12 +52,4 @@ public class PlayerCtrl : MonoBehaviour
     {
         rb.velocity = new Vector2(speedX, speedY);
     }
-
-    //void OnCollisionEnter2D(Collision2D collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Enemy"))
-    //    {
-    //        Debug.Log("x");
-    //    }
-    //}
 }

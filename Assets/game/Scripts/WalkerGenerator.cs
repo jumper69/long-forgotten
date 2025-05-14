@@ -670,7 +670,7 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
 
-        Debug.LogWarning("Nie znaleziono pola startowego przy dolnej krawêdzi.");
+        Debug.LogWarning("Edge not found.");
         return new Vector3Int(-1, -1, 0);
     }
 

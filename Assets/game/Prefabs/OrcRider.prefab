@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8029510626982405450}
   - component: {fileID: 3896860446482423060}
   - component: {fileID: 6937147914069861106}
+  - component: {fileID: 6385902486879431960}
   m_Layer: 0
   m_Name: OrcRider
   m_TagString: Untagged
@@ -176,3 +177,17 @@ MonoBehaviour:
   attackCooldown: 3
   wanderRadius: 6
   wanderInterval: 3
+--- !u!114 &6385902486879431960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7986498340453401636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea2947154bd6a4c44b310c1750705748, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 300
+  destroyOnDeath: 1

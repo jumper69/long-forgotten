@@ -96,6 +96,17 @@ public class EnemyAI : MonoBehaviour
 
         yield return new WaitForSeconds(0.8f);
 
+        yield return new WaitForSeconds(0.8f);
+
+        if (player != null)
+        {
+            HealthSystem targetHealth = player.GetComponent<HealthSystem>();
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(20);
+            }
+        }
+
         animator.SetBool("isAttacking", false);
         yield return new WaitForSeconds(attackCooldown);
 

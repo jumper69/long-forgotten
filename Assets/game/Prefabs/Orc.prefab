@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5533049028568014481}
   - component: {fileID: 7326128982575323829}
   - component: {fileID: 567896889670151181}
+  - component: {fileID: 6613492491847566873}
   m_Layer: 0
   m_Name: Orc
   m_TagString: Untagged
@@ -176,3 +177,17 @@ MonoBehaviour:
   attackCooldown: 2
   wanderRadius: 8
   wanderInterval: 3
+--- !u!114 &6613492491847566873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3447217304870678112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea2947154bd6a4c44b310c1750705748, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  destroyOnDeath: 1

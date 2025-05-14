@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1389244241186381871}
   - component: {fileID: 1674193200993033608}
   - component: {fileID: 6708345486216392243}
+  - component: {fileID: -4904532690363000118}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Untagged
@@ -176,3 +177,17 @@ MonoBehaviour:
   wanderInterval: 4
   attackRange: 1.6
   attackCooldown: 1.5
+--- !u!114 &-4904532690363000118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1463880286693760570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea2947154bd6a4c44b310c1750705748, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  destroyOnDeath: 1

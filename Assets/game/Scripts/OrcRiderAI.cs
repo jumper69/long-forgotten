@@ -94,6 +94,17 @@ public class OrcRiderAI : MonoBehaviour
 
         yield return new WaitForSeconds(1.0f);
 
+        if (player != null)
+        {
+            HealthSystem targetHealth = player.GetComponent<HealthSystem>();
+            if (targetHealth != null)
+            {
+                targetHealth.TakeDamage(45);
+            }
+        }
+
+        yield return new WaitForSeconds(0.8f);
+
         animator.SetBool("isAttacking", false);
         yield return new WaitForSeconds(attackCooldown);
 
