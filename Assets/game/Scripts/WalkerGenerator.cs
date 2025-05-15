@@ -50,6 +50,12 @@ public class WalkerGenerator : MonoBehaviour
 
     public GameObject playerObject;
 
+    public GameObject[] structurePrefabs;
+    public int numberOfStructures = 3;
+    public int structureSpacing = 6;
+
+    public GameObject npcObject;
+
     bool HasFloorNeighbor(Vector3Int pos)
     {
         int x = pos.x;
@@ -193,6 +199,7 @@ public class WalkerGenerator : MonoBehaviour
         ScatterPlants();
         ScatterGrass();
         ScatterTrees();
+        ScatterStructures();
 
         if (navMeshSurface != null)
         {
@@ -206,17 +213,28 @@ public class WalkerGenerator : MonoBehaviour
         SpawnEnemies();
         SpawnBoss();
 
+        //if (playerObject != null)
+        //{
+        //    PlacePlayerNearNPC();
+        //}
+
         if (playerObject != null)
         {
-            Vector3Int spawnTile = FindEdgePlayerStart();
-
-            if (spawnTile.x >= 0 && spawnTile.y >= 0)
-            {
-                Vector3 worldPos = tileMap.CellToWorld(spawnTile) + new Vector3(0.5f, 0.5f, 0);
-                playerObject.transform.position = worldPos;
-            }
+            Vector3Int spawnTile = FindSafePlayerStart();
+            Vector3 worldPos = tileMap.CellToWorld(spawnTile) + new Vector3(0.5f, 0.5f, 0);
+            playerObject.transform.position = worldPos;
         }
 
+        if (npcObject != null)
+        {
+            Vector3Int npcTile = FindSafePlayerStart();
+
+            if (npcTile.x >= 0 && npcTile.y >= 0)
+            {
+                Vector3 npcWorldPos = tileMap.CellToWorld(npcTile) + new Vector3(0.5f, 0.5f, 0);
+                npcObject.transform.position = npcWorldPos;
+            }
+        }
     }
 
     void FillLonelyTileNeighbors()
@@ -655,24 +673,162 @@ public class WalkerGenerator : MonoBehaviour
         }
     }
 
-    Vector3Int FindEdgePlayerStart()
-    {
-        int edgeOffset = 2;
+    //Vector3Int FindEdgePlayerStart()
+    //{
+    //    int edgeOffset = 2;
 
-        for (int x = edgeOffset; x < MapWidth - edgeOffset; x++)
+    //    for (int x = edgeOffset; x < MapWidth - edgeOffset; x++)
+    //    {
+    //        for (int y = edgeOffset; y < edgeOffset + 4; y++)
+    //        {
+    //            if (gridHandler[x, y] == Grid.FLOOR)
+    //            {
+    //                return new Vector3Int(x, y, 0);
+    //            }
+    //        }
+    //    }
+
+    //    Debug.LogWarning("Edge not found.");
+    //    return new Vector3Int(-1, -1, 0);
+    //}
+
+    Vector3Int FindSafePlayerStart()
+    {
+        int edgeOffset = 3; // jak g³êboko od krawêdzi
+        int maxScanDepth = 10;
+
+        for (int depth = edgeOffset; depth < edgeOffset + maxScanDepth; depth++)
         {
-            for (int y = edgeOffset; y < edgeOffset + 4; y++)
+            for (int x = depth; x < MapWidth - depth; x++)
             {
-                if (gridHandler[x, y] == Grid.FLOOR)
+                for (int y = depth; y < MapHeight - depth; y++)
                 {
-                    return new Vector3Int(x, y, 0);
+                    if (gridHandler[x, y] != Grid.FLOOR) continue;
+
+                    // SprawdŸ, czy wokó³ jest te¿ pod³oga
+                    bool isSafe = true;
+                    for (int dx = -1; dx <= 1 && isSafe; dx++)
+                    {
+                        for (int dy = -1; dy <= 1; dy++)
+                        {
+                            int nx = x + dx;
+                            int ny = y + dy;
+
+                            if (nx < 0 || ny < 0 || nx >= MapWidth || ny >= MapHeight || gridHandler[nx, ny] != Grid.FLOOR)
+                            {
+                                isSafe = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isSafe)
+                        return new Vector3Int(x, y, 0);
                 }
             }
         }
 
-        Debug.LogWarning("Edge not found.");
-        return new Vector3Int(-1, -1, 0);
+        // Awaryjnie — œrodek mapy
+        Debug.LogWarning("Couldn't find safe edge spawn, using center.");
+        return new Vector3Int(MapWidth / 2, MapHeight / 2, 0);
     }
 
 
+    void ScatterStructures()
+    {
+        int structureWidth = 7;
+        int structureHeight = 10;
+        int spacing = structureSpacing;
+        int attempts = 100;
+        int placed = 0;
+
+        while (placed < numberOfStructures && attempts-- > 0)
+        {
+            int x = Random.Range(spacing, MapWidth - structureWidth - spacing);
+            int y = Random.Range(spacing, MapHeight - structureHeight - spacing);
+
+            bool canPlace = true;
+
+            for (int dx = 0; dx < structureWidth && canPlace; dx++)
+            {
+                for (int dy = 0; dy < structureHeight; dy++)
+                {
+                    int checkX = x + dx;
+                    int checkY = y + dy;
+
+                    if (gridHandler[checkX, checkY] != Grid.FLOOR)
+                    {
+                        canPlace = false;
+                        break;
+                    }
+
+                    Vector3 worldPos = tileMap.CellToWorld(new Vector3Int(checkX, checkY, 0)) + new Vector3(0.5f, 0.5f, 0);
+                    Collider2D hit = Physics2D.OverlapCircle(worldPos, 0.4f, LayerMask.GetMask("Obstacles"));
+                    if (hit != null)
+                    {
+                        canPlace = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!canPlace) continue;
+
+            GameObject prefab = structurePrefabs[Random.Range(0, structurePrefabs.Length)];
+            Vector3Int centerTile = new Vector3Int(x + structureWidth / 2, y + structureHeight / 2, 0);
+            Vector3 worldPosition = tileMap.CellToWorld(centerTile) + new Vector3(0.5f, 0.5f, 0);
+
+            Instantiate(prefab, worldPosition, Quaternion.identity);
+            placed++;
+        }
+    }
+
+    void PlacePlayerNearNPC()
+    {
+        GameObject npc = GameObject.FindWithTag("NPC"); // upewnij siê, ¿e NPC ma ten tag!
+        if (npc == null)
+        {
+            Debug.LogWarning("NPC not found, falling back to edge.");
+            //PlacePlayerAtEdge();
+            return;
+        }
+
+        Vector3 npcWorldPos = npc.transform.position;
+        Vector3Int npcTile = tileMap.WorldToCell(npcWorldPos);
+
+        int searchRadius = 5;
+
+        for (int r = 1; r <= searchRadius; r++)
+        {
+            for (int dx = -r; dx <= r; dx++)
+            {
+                for (int dy = -r; dy <= r; dy++)
+                {
+                    int x = npcTile.x + dx;
+                    int y = npcTile.y + dy;
+
+                    if (x >= 0 && x < MapWidth && y >= 0 && y < MapHeight)
+                    {
+                        if (gridHandler[x, y] == Grid.FLOOR)
+                        {
+                            Vector3 worldPos = tileMap.CellToWorld(new Vector3Int(x, y, 0)) + new Vector3(0.5f, 0.5f, 0);
+                            playerObject.transform.position = worldPos;
+                            Debug.Log("Player placed near NPC.");
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        Debug.LogWarning("No terrain near npc.");
+        //PlacePlayerAtEdge();
+    }
+
+    //void PlacePlayerAtEdge()
+    //{
+    //    Vector3Int spawnTile = FindEdgePlayerStart();
+    //    Vector3 worldPos = tileMap.CellToWorld(spawnTile) + new Vector3(0.5f, 0.5f, 0);
+    //    playerObject.transform.position = worldPos;
+    //}
 }
