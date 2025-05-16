@@ -9,6 +9,8 @@ public class MainMenuUI : MonoBehaviour
     public GameObject startButton;
     public GameObject settingsButton;
     public GameObject exitButton;
+    public GameObject controlsPanel;
+    public GameObject controlsButton;
 
     public void StartGame()
     {
@@ -21,6 +23,7 @@ public class MainMenuUI : MonoBehaviour
         startButton.SetActive(false);
         settingsButton.SetActive(false);
         exitButton.SetActive(false);
+        controlsButton.SetActive(false);
     }
 
     public void CloseSettings()
@@ -29,6 +32,7 @@ public class MainMenuUI : MonoBehaviour
         startButton.SetActive(true);
         settingsButton.SetActive(true);
         exitButton.SetActive(true);
+        controlsButton.SetActive(true);
     }
 
     public void SetVolume(float volume)
@@ -40,5 +44,24 @@ public class MainMenuUI : MonoBehaviour
     {
         Application.Quit();
         Debug.Log("Quit pressed");
+    }
+
+    public void OpenControls()
+    {
+        controlsPanel.SetActive(true);
+        settingsPanel.SetActive(false);
+        startButton.SetActive(false);
+        settingsButton.SetActive(false);
+        exitButton.SetActive(false);
+        controlsButton.SetActive(false);
+    }
+
+    public void CloseControls()
+    {
+        controlsPanel.SetActive(false);
+        startButton.SetActive(true);
+        settingsButton.SetActive(true);
+        exitButton.SetActive(true);
+        controlsButton.SetActive(true);
     }
 }
