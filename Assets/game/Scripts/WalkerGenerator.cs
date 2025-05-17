@@ -213,11 +213,6 @@ public class WalkerGenerator : MonoBehaviour
         SpawnEnemies();
         SpawnBoss();
 
-        //if (playerObject != null)
-        //{
-        //    PlacePlayerNearNPC();
-        //}
-
         if (playerObject != null)
         {
             Vector3Int spawnTile = FindSafePlayerStart();
@@ -673,28 +668,9 @@ public class WalkerGenerator : MonoBehaviour
         }
     }
 
-    //Vector3Int FindEdgePlayerStart()
-    //{
-    //    int edgeOffset = 2;
-
-    //    for (int x = edgeOffset; x < MapWidth - edgeOffset; x++)
-    //    {
-    //        for (int y = edgeOffset; y < edgeOffset + 4; y++)
-    //        {
-    //            if (gridHandler[x, y] == Grid.FLOOR)
-    //            {
-    //                return new Vector3Int(x, y, 0);
-    //            }
-    //        }
-    //    }
-
-    //    Debug.LogWarning("Edge not found.");
-    //    return new Vector3Int(-1, -1, 0);
-    //}
-
     Vector3Int FindSafePlayerStart()
     {
-        int edgeOffset = 3; // jak g³êboko od krawêdzi
+        int edgeOffset = 3;
         int maxScanDepth = 10;
 
         for (int depth = edgeOffset; depth < edgeOffset + maxScanDepth; depth++)
@@ -705,7 +681,6 @@ public class WalkerGenerator : MonoBehaviour
                 {
                     if (gridHandler[x, y] != Grid.FLOOR) continue;
 
-                    // SprawdŸ, czy wokó³ jest te¿ pod³oga
                     bool isSafe = true;
                     for (int dx = -1; dx <= 1 && isSafe; dx++)
                     {
@@ -728,7 +703,6 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
 
-        // Awaryjnie — œrodek mapy
         Debug.LogWarning("Couldn't find safe edge spawn, using center.");
         return new Vector3Int(MapWidth / 2, MapHeight / 2, 0);
     }
@@ -785,11 +759,10 @@ public class WalkerGenerator : MonoBehaviour
 
     void PlacePlayerNearNPC()
     {
-        GameObject npc = GameObject.FindWithTag("NPC"); // upewnij siê, ¿e NPC ma ten tag!
+        GameObject npc = GameObject.FindWithTag("NPC");
         if (npc == null)
         {
             Debug.LogWarning("NPC not found, falling back to edge.");
-            //PlacePlayerAtEdge();
             return;
         }
 
@@ -822,13 +795,5 @@ public class WalkerGenerator : MonoBehaviour
         }
 
         Debug.LogWarning("No terrain near npc.");
-        //PlacePlayerAtEdge();
     }
-
-    //void PlacePlayerAtEdge()
-    //{
-    //    Vector3Int spawnTile = FindEdgePlayerStart();
-    //    Vector3 worldPos = tileMap.CellToWorld(spawnTile) + new Vector3(0.5f, 0.5f, 0);
-    //    playerObject.transform.position = worldPos;
-    //}
 }

@@ -51,6 +51,11 @@ public class HealthSystem : MonoBehaviour
         {
             gameObject.SetActive(false);
         }
+
+        if (CompareTag("Player"))
+        {
+            FindObjectOfType<DeathUI>().ShowDeathScreen();
+        }
     }
 
     public int GetCurrentHealth()

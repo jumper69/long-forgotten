@@ -5,6 +5,7 @@ public class PlayerAttack : MonoBehaviour
     public float attackRange = 5f;
     public int damage = 10;
     public KeyCode attackKey = KeyCode.Space;
+    public LayerMask enemyLayer;
 
     void Update()
     {
@@ -20,12 +21,11 @@ public class PlayerAttack : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            Debug.Log("Hit: " + hit.name);
+            if (hit.gameObject == gameObject) continue;
 
             HealthSystem enemyHealth = hit.GetComponent<HealthSystem>();
             if (enemyHealth != null)
             {
-                Debug.Log("Enemy with health found!");
                 enemyHealth.TakeDamage(damage);
             }
         }
