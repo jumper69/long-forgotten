@@ -37,20 +37,65 @@ public class HealthSystem : MonoBehaviour
         }
     }
 
+    //void Die()
+    //{
+    //    Debug.Log($"{gameObject.name} died.");
+
+    //    // dth anim
+
+    //    if (destroyOnDeath)
+    //    {
+    //        Destroy(gameObject);
+    //    }
+    //    else
+    //    {
+    //        gameObject.SetActive(false);
+    //    }
+
+    //    if (CompareTag("Player"))
+    //    {
+    //        FindObjectOfType<DeathUI>().ShowDeathScreen();
+    //    }
+
+    //    if (CompareTag("Enemy"))
+    //    {
+    //        var tracker = FindObjectOfType<QuestTracker>();
+    //        if (tracker != null)
+    //        {
+    //            string enemyType = gameObject.name;
+
+    //            if (enemyType.Contains("Skeleton"))
+    //                tracker.EnemyKilled("Skeleton");
+    //            else if (enemyType.Contains("OrcRider") || enemyType.Contains("Boss"))
+    //                tracker.EnemyKilled("Boss");
+    //            else if (enemyType.Contains("Orc"))
+    //                tracker.EnemyKilled("Orc");
+    //        }
+    //    }
+    //}
+
     void Die()
     {
         Debug.Log($"{gameObject.name} died.");
 
-        // dth anim
+        if (!CompareTag("Player"))
+        {
+            QuestTracker tracker = FindObjectOfType<QuestTracker>();
+            if (tracker != null)
+            {
+                if (gameObject.name.Contains("Skeleton"))
+                    tracker.EnemyKilled("Skeleton");
+                else if (gameObject.name.Contains("OrcRider"))
+                    tracker.EnemyKilled("Boss");
+                else if (gameObject.name.Contains("Orc"))
+                    tracker.EnemyKilled("Orc");
+            }
+        }
 
         if (destroyOnDeath)
-        {
             Destroy(gameObject);
-        }
         else
-        {
             gameObject.SetActive(false);
-        }
 
         if (CompareTag("Player"))
         {
