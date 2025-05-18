@@ -10,29 +10,57 @@ public class NPCInteraction : MonoBehaviour
     public string[] dialogLines;
     private int dialogIndex = 0;
     public TextMeshProUGUI dialogText;
+    public GameObject questTextObject;
+
+    public string[] initialDialogLines;
+    public string[] completedDialogLines;
+    private QuestTracker questTracker;
+
+    void Start()
+    {
+        questTracker = FindObjectOfType<QuestTracker>();
+    }
+
+    //void Update()
+    //{
+    //    if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
+    //    {
+    //        dialogPanel.SetActive(true);
+    //        dialogText.text = dialogLines[dialogIndex];
+
+    //        dialogIndex++;
+    //        if (dialogIndex >= dialogLines.Length)
+    //        {
+    //            dialogIndex = 0;
+    //            dialogPanel.SetActive(false);
+    //        }
+    //        questTextObject.SetActive(true);
+    //    }
+    //}
 
     void Update()
     {
         if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
         {
             dialogPanel.SetActive(true);
-            dialogText.text = dialogLines[dialogIndex];
 
+            string[] currentDialog = questTracker.IsQuestComplete() ? completedDialogLines : initialDialogLines;
+
+            dialogText.text = currentDialog[dialogIndex];
             dialogIndex++;
-            if (dialogIndex >= dialogLines.Length)
+
+            if (dialogIndex >= currentDialog.Length)
             {
-                dialogIndex = 0;
                 dialogPanel.SetActive(false);
+                dialogIndex = 0;
+
+                if (!questTracker.IsQuestComplete())
+                {
+                    questTextObject.SetActive(true);
+                }
             }
         }
     }
-    //void Update()
-    //{
-    //    if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
-    //    {
-    //        dialogPanel.SetActive(!dialogPanel.activeSelf);
-    //    }
-    //}
 
     void OnTriggerEnter2D(Collider2D other)
     {

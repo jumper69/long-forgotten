@@ -37,6 +37,17 @@ public class HealthSystem : MonoBehaviour
         }
     }
 
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        Debug.Log($"{gameObject.name} healed for {amount}. HP: {currentHealth}");
+
+        if (healthBar != null)
+        {
+            healthBar.value = currentHealth;
+        }
+    }
+
     //void Die()
     //{
     //    Debug.Log($"{gameObject.name} died.");
@@ -101,6 +112,13 @@ public class HealthSystem : MonoBehaviour
         {
             FindObjectOfType<DeathUI>().ShowDeathScreen();
         }
+        if (CompareTag("Enemy"))
+        {
+            PlayerXP xp = FindObjectOfType<PlayerXP>();
+            if (xp != null)
+                xp.GainXP(25);
+        }
+
     }
 
     public int GetCurrentHealth()
@@ -110,9 +128,9 @@ public class HealthSystem : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            TakeDamage(10);
+            TakeDamage(15);
         }
     }
 }

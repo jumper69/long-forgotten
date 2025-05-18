@@ -14,6 +14,13 @@ public class QuestTracker : MonoBehaviour
     private int orcsKilled = 0;
     private int bossesKilled = 0;
 
+    public bool IsQuestComplete()
+    {
+        return skeletonsKilled >= skeletonsToKill &&
+               orcsKilled >= orcsToKill &&
+               bossesKilled >= bossesToKill;
+    }
+
     void Start()
     {
         UpdateUI();
