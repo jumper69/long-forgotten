@@ -18,10 +18,14 @@ public class OrcRiderAI : MonoBehaviour
     private float wanderTimer;
     private bool isAttacking = false;
 
+    public AudioClip attackSound;
+    private AudioSource audioSource;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
 
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -92,7 +96,10 @@ public class OrcRiderAI : MonoBehaviour
         animator.SetBool("isAttacking", true);
         agent.ResetPath();
 
-        yield return new WaitForSeconds(1.0f);
+        if (attackSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(attackSound);
+        }
 
         if (player != null)
         {

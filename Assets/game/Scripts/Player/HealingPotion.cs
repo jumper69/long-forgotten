@@ -10,31 +10,21 @@ public class HealingPotion : MonoBehaviour
     public float cooldown = 5f;
     private float lastUseTime = -Mathf.Infinity;
 
+    public AudioClip drinkSound;
+    private AudioSource audioSource;
+
     private bool unlocked = false;
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     public void UnlockPotion()
     {
         unlocked = true;
     }
 
-    //void Update()
-    //{
-    //    if (unlocked && Input.GetKeyDown(useKey))
-    //    {
-    //        if (Time.time - lastUseTime >= cooldown)
-    //        {
-    //            if (healthSystem != null)
-    //            {
-    //                healthSystem.Heal(healingAmount);
-    //                lastUseTime = Time.time;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            Debug.Log("Cooldown!");
-    //        }
-    //    }
-    //}
     void Update()
     {
         float timeSinceUse = Time.time - lastUseTime;
@@ -56,6 +46,11 @@ public class HealingPotion : MonoBehaviour
                 {
                     healthSystem.Heal(healingAmount);
                     lastUseTime = Time.time;
+
+                    if (drinkSound != null && audioSource != null)
+                    {
+                        audioSource.PlayOneShot(drinkSound);
+                    }
                 }
             }
         }

@@ -20,10 +20,14 @@ public class EnemyAI : MonoBehaviour
 
     private bool isAttacking = false;
 
+    public AudioClip attackSound;
+    private AudioSource audioSource;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
 
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -94,7 +98,10 @@ public class EnemyAI : MonoBehaviour
         animator.SetBool("isAttacking", true);
         agent.ResetPath();
 
-        yield return new WaitForSeconds(0.8f);
+        if (attackSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(attackSound);
+        }
 
         yield return new WaitForSeconds(0.8f);
 

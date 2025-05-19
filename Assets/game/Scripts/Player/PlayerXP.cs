@@ -12,9 +12,13 @@ public class PlayerXP : MonoBehaviour
     public GameObject healingPotionUI;
     public GameObject newAttackUI;
 
+    public AudioClip levelUpSound;
+    private AudioSource audioSource;
+
     void Start()
     {
         UpdateXPBar();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void GainXP(int amount)
@@ -44,6 +48,11 @@ public class PlayerXP : MonoBehaviour
             HealingPotion potion = FindObjectOfType<HealingPotion>();
             if (potion != null)
                 potion.UnlockPotion();
+
+            if (levelUpSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(levelUpSound);
+            }
         }
 
         if (level == 3)
@@ -51,12 +60,14 @@ public class PlayerXP : MonoBehaviour
             if (newAttackUI != null)
                 newAttackUI.SetActive(true);
 
-            //NewAttack unlocker = FindObjectOfType<NewAttack>();
-            //if (unlocker != null)
-            //    unlocker.UnlockNewAttack();
+            FindObjectOfType<PlayerAttack>().strongAttackUnlocked = true;
+
+            if (levelUpSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(levelUpSound);
+            }
         }
     }
-
     void UpdateXPBar()
     {
         if (xpBar != null)

@@ -47,44 +47,6 @@ public class HealthSystem : MonoBehaviour
             healthBar.value = currentHealth;
         }
     }
-
-    //void Die()
-    //{
-    //    Debug.Log($"{gameObject.name} died.");
-
-    //    // dth anim
-
-    //    if (destroyOnDeath)
-    //    {
-    //        Destroy(gameObject);
-    //    }
-    //    else
-    //    {
-    //        gameObject.SetActive(false);
-    //    }
-
-    //    if (CompareTag("Player"))
-    //    {
-    //        FindObjectOfType<DeathUI>().ShowDeathScreen();
-    //    }
-
-    //    if (CompareTag("Enemy"))
-    //    {
-    //        var tracker = FindObjectOfType<QuestTracker>();
-    //        if (tracker != null)
-    //        {
-    //            string enemyType = gameObject.name;
-
-    //            if (enemyType.Contains("Skeleton"))
-    //                tracker.EnemyKilled("Skeleton");
-    //            else if (enemyType.Contains("OrcRider") || enemyType.Contains("Boss"))
-    //                tracker.EnemyKilled("Boss");
-    //            else if (enemyType.Contains("Orc"))
-    //                tracker.EnemyKilled("Orc");
-    //        }
-    //    }
-    //}
-
     void Die()
     {
         Debug.Log($"{gameObject.name} died.");
@@ -110,6 +72,7 @@ public class HealthSystem : MonoBehaviour
 
         if (CompareTag("Player"))
         {
+            FindObjectOfType<DeathSound>()?.PlayDeathSound();
             FindObjectOfType<DeathUI>().ShowDeathScreen();
         }
         if (CompareTag("Enemy"))

@@ -20,24 +20,6 @@ public class NPCInteraction : MonoBehaviour
     {
         questTracker = FindObjectOfType<QuestTracker>();
     }
-
-    //void Update()
-    //{
-    //    if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
-    //    {
-    //        dialogPanel.SetActive(true);
-    //        dialogText.text = dialogLines[dialogIndex];
-
-    //        dialogIndex++;
-    //        if (dialogIndex >= dialogLines.Length)
-    //        {
-    //            dialogIndex = 0;
-    //            dialogPanel.SetActive(false);
-    //        }
-    //        questTextObject.SetActive(true);
-    //    }
-    //}
-
     void Update()
     {
         if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
