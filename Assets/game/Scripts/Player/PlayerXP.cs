@@ -40,19 +40,17 @@ public class PlayerXP : MonoBehaviour
 
         Debug.Log($"LEVEL UP! {level}");
 
-        if (level == 2)
+        PlayerStats stats = FindObjectOfType<PlayerStats>();
+        if (stats != null)
         {
-            if (healingPotionUI != null)
-                healingPotionUI.SetActive(true);
+            stats.AddUpgradePoints(3);
+        }
 
+        if (level == 2 && healingPotionUI != null)
+        {
+            healingPotionUI.SetActive(true);
             HealingPotion potion = FindObjectOfType<HealingPotion>();
-            if (potion != null)
-                potion.UnlockPotion();
-
-            if (levelUpSound != null && audioSource != null)
-            {
-                audioSource.PlayOneShot(levelUpSound);
-            }
+            if (potion != null) potion.UnlockPotion();
         }
 
         if (level == 3)
@@ -61,13 +59,14 @@ public class PlayerXP : MonoBehaviour
                 newAttackUI.SetActive(true);
 
             FindObjectOfType<PlayerAttack>().strongAttackUnlocked = true;
+        }
 
-            if (levelUpSound != null && audioSource != null)
-            {
-                audioSource.PlayOneShot(levelUpSound);
-            }
+        if (levelUpSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(levelUpSound);
         }
     }
+
     void UpdateXPBar()
     {
         if (xpBar != null)

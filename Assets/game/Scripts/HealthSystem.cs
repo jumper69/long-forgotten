@@ -96,4 +96,16 @@ public class HealthSystem : MonoBehaviour
             TakeDamage(15);
         }
     }
+
+    public void IncreaseMaxHealth(int amount)
+    {
+        maxHealth += amount;
+        currentHealth += amount;
+
+        if (healthBar != null)
+        {
+            healthBar.maxValue = maxHealth;
+            healthBar.value = currentHealth;
+        }
+    }
 }

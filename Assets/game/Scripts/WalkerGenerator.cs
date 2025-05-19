@@ -56,6 +56,8 @@ public class WalkerGenerator : MonoBehaviour
 
     public GameObject npcObject;
 
+    public LoadingScreenController loadingScreen;
+
     bool HasFloorNeighbor(Vector3Int pos)
     {
         int x = pos.x;
@@ -111,7 +113,8 @@ public class WalkerGenerator : MonoBehaviour
 
         TileCount++;
 
-        StartCoroutine(CreateFloors());
+        StartCoroutine(StartWithLoadingScreen());
+        //StartCoroutine(CreateFloors());
     }
 
     Vector2 GetDirection()
@@ -186,6 +189,12 @@ public class WalkerGenerator : MonoBehaviour
             else
             {
                 yield return null;
+            }
+
+            float fillPercent = (float)TileCount / (float)(MapWidth * MapHeight);
+            if (loadingScreen != null)
+            {
+                loadingScreen.SetProgress(Mathf.Lerp(0f, 0.6f, fillPercent));
             }
         }
 
@@ -355,7 +364,6 @@ public class WalkerGenerator : MonoBehaviour
             }
         }
     }
-    //
 
     void ChanceToRemove()
     {
@@ -795,5 +803,53 @@ public class WalkerGenerator : MonoBehaviour
         }
 
         Debug.LogWarning("No terrain near npc.");
+    }
+
+    IEnumerator StartWithLoadingScreen()
+    {
+        if (loadingScreen != null)
+        {
+            loadingScreen.Show();
+            loadingScreen.SetProgress(0.05f);
+        }
+
+        yield return CreateFloors();
+
+        if (loadingScreen != null) loadingScreen.SetProgress(0.5f);
+
+        ScatterPlants();
+        if (loadingScreen != null) loadingScreen.SetProgress(0.7f);
+        yield return null;
+        ScatterGrass();
+        if (loadingScreen != null) loadingScreen.SetProgress(0.75f);
+        yield return null;
+        ScatterTrees();
+        if (loadingScreen != null) loadingScreen.SetProgress(0.8f);
+        yield return null;
+        ScatterStructures();
+        if (loadingScreen != null) loadingScreen.SetProgress(0.85f);
+        yield return null;
+
+        if (loadingScreen != null) loadingScreen.SetProgress(0.9f);
+
+        if (navMeshSurface != null)
+        {
+            navMeshSurface.BuildNavMesh();
+        }
+
+        if (loadingScreen != null) loadingScreen.SetProgress(0.9f);
+
+        SpawnEnemies();
+        SpawnBoss();
+        if (loadingScreen != null) loadingScreen.SetProgress(0.95f);
+        yield return null;
+
+        PlacePlayerNearNPC();
+        if (loadingScreen != null)
+        {
+            loadingScreen.SetProgress(1f);
+            yield return new WaitForSeconds(0.5f);
+            loadingScreen.Hide();
+        }
     }
 }
