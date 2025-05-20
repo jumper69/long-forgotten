@@ -46,7 +46,7 @@ public class QuestTracker : MonoBehaviour
 
     void UpdateUI()
     {
-        questText.text = $"Pokonaj wrogów:\n" +
+        questText.text = $"Pokonaj przeciwnikow:\n" +
                          $"Szkielet: {skeletonsKilled}/{skeletonsToKill}\n" +
                          $"Ork: {orcsKilled}/{orcsToKill}\n" +
                          $"Boss Hordy: {bossesKilled}/{bossesToKill}";
